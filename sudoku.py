@@ -2,13 +2,14 @@ import unittest
 
 import numpy as np
 
+
 class sudoPoint():
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.available = set(range(1, 10))
 
-    def getValue():
+    def getValue(self):
         if len(self.available) == 1:
             return self.available[0]
         else:
@@ -17,8 +18,9 @@ class sudoPoint():
 
 class sudoku():
     def __init__(self):
+        # using 9*9 numpy array to represent sudoku data, 0 meas empty square.
         self._sudo = np.empty([9, 9])
-
+        self._sudo_candidate = np.tile(range(1, 10), 81).reshape([9,9,9])
     @property
     def sudo(self):
         return self._sudo
@@ -28,7 +30,7 @@ class sudoku():
         # require: 9*9 numpy array&int&>=0&<=9
         if isinstance(sudo, np.ndarray) and sudo.shape == (9, 9):
             if sudo.dtype.type in (int, np.int, np.int8, np.int16, np.int32,
-                                    np.int64) and sudo.min() >= 0 and sudo.max() <= 9:
+                                   np.int64) and sudo.min() >= 0 and sudo.max() <= 9:
                 self._sudo = sudo
             else:
                 raise(TypeError('Input data for sudo be int and in the range of 0~9'))
@@ -38,8 +40,10 @@ class sudoku():
     def checkSolved(self):
         # 检查数独是否被正确解答了
         #
-        # 思路：依次检查每一行（*9）， 每一列（*9）， 每一个九宫格（*9）
-        # 是否满足条件。
+        # 思路：
+        #  1. 是否有格子没有填完
+        #  2. 依次检查每一行（*9）， 每一列（*9）， 每一个九宫格（*9）
+        #     是否满足条件。
 
         if self._sudo.min() == 0:
             return False
@@ -57,7 +61,7 @@ class sudoku():
             a = int(np.floor(i/3))
             b = i % 3
             if len(np.unique(self._sudo[a*3:a*3+3, b*3:b*3+3])) != 9:
-                print('fangge')
+                print('block')
                 return False
         return True
 

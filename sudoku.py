@@ -1,5 +1,17 @@
 import numpy as np
 
+class sudoPoint():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.available = set(range(1, 10))
+
+    def getValue():
+        if len(self.available) == 1:
+            return self.available[0]
+        else:
+            return 0
+
 
 class sudoku():
     def __init__(self):

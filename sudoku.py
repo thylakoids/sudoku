@@ -95,7 +95,7 @@ class sudoku():
             return 1
 
     @classmethod
-    def checkState(cls, sudo)->int:
+    def checkStateSudo(cls, sudo)->int:
         """check current state of sudoku
         solution:
         1. if has nonzero repeat number, return -1
@@ -121,6 +121,10 @@ class sudoku():
                 elif _state == 0:
                     state = 0
         return state
+
+    @classmethod
+    def checkStateCandidate(cls, candidate):
+        return cls.checkStateSudo(cls.getSudoFromCandidate(candidate))
 
     @classmethod
     def exclude(cls, candidate):
@@ -162,29 +166,32 @@ class sudoku():
 
     @classmethod
     def solve(cls, candidate):
-        print('*')
+        """may have multi solution!! need improve
+
+        Args:
+            candidate (TYPE): Description
+
+        Returns:
+            TYPE: Description
+        """
         candidate = cls.exclude(candidate)
         sudo = cls.getSudoFromCandidate(candidate)
-        state = cls.checkState(sudo)
+        state = cls.checkStateSudo(sudo)
         if state == 1:
-            solution = sudo
+            return sudo
         elif state == -1:
-            solution = -1
+            return -1
         else:
             candidate1, candidate2 = cls.guess(candidate)
             solution1 = cls.solve(candidate1)
-            solution2 = cls.solve(candidate2)
-
-            state1 = cls.checkState(cls.getSudoFromCandidate(candidate1))
-            state2 = cls.checkState(cls.getSudoFromCandidate(candidate2))
-            if state1 == 1:
-                solution = solution1
-                print(solution)
-            elif state2 == 1:
-                solution = solution2
+            if isinstance(solution1, np.ndarray):
+                return solution1
             else:
-                solution = -1
-        return solution
+                solution2 = cls.solve(candidate2)
+                if isinstance(solution2, np.ndarray):
+                    return solution2
+                else:
+                    return -1
 
 
 class testSuduku(unittest.TestCase):
@@ -225,11 +232,11 @@ class testSuduku(unittest.TestCase):
 
     def test_checkState(self):
         self.mysudo.sudo = self.sudo_solved
-        self.assertEqual(self.mysudo.checkState(self.mysudo.sudo), 1)
+        self.assertEqual(self.mysudo.checkStateSudo(self.mysudo.sudo), 1)
         self.mysudo.sudo = self.sudo_tobesolved
-        self.assertEqual(self.mysudo.checkState(self.mysudo.sudo), 0)
+        self.assertEqual(self.mysudo.checkStateSudo(self.mysudo.sudo), 0)
         self.mysudo.sudo = self.sudo_error
-        self.assertEqual(self.mysudo.checkState(self.mysudo.sudo), -1)
+        self.assertEqual(self.mysudo.checkStateSudo(self.mysudo.sudo), -1)
 
     def test_exclude(self):
         self.mysudo.sudo = self.sudo_tobesolved
